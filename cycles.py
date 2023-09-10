@@ -61,5 +61,5 @@ def s(n: int) -> list[str]:
 
     return list(map(perm_to_str, res))
 
-print(simplify('(1 3 4)(1 2)(3 4)', 4))
-# print(s(4))
+assert simplify('(1 3 4)(1 2)(3 4)', 4) == '(1 2 3)'
+assert simplify('(1 3)(1 2)(3 4)', 4) == '(1 2 3 4)'
