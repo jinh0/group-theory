@@ -3,7 +3,7 @@ from algebra.cycles import str_to_perm, perm_to_str, simplify
 
 @st.composite
 def gen_perm(draw):
-    n = 6
+    n = draw(st.integers(min_value=1, max_value=10))
     xs = draw(
         st.lists(
             st.integers(min_value=1, max_value=n),
