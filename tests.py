@@ -1,5 +1,5 @@
 from hypothesis import given, strategies as st
-from algebra.cycles import str_to_perm, perm_to_str
+from algebra.cycles import str_to_perm, perm_to_str, simplify
 
 @st.composite
 def gen_perm(draw):
@@ -18,3 +18,7 @@ def test_inversion(perm):
     assert str_to_perm(perm_to_str(perm), 6) == perm
 
 test_inversion()
+
+assert simplify('(1 2 3 4)', 4) == '(1 2 3 4)'
+assert simplify('(1 3 4)(1 2)(3 4)', 4) == '(1 2 3)'
+assert simplify('(1 3)(1 2)(3 4)', 4) == '(1 2 3 4)'

@@ -63,7 +63,3 @@ def s(n: int) -> list[Perm]:
         res.append({i + 1: perm[i] for i in range(n)})
 
     return res
-
-assert simplify('(1 2 3 4)', 4) == '(1 2 3 4)'
-assert simplify('(1 3 4)(1 2)(3 4)', 4) == '(1 2 3)'
-assert simplify('(1 3)(1 2)(3 4)', 4) == '(1 2 3 4)'
