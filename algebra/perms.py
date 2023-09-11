@@ -1,4 +1,5 @@
 import itertools
+from functools import reduce
 
 class Perm:
     perm: dict[int, int]
@@ -7,7 +8,7 @@ class Perm:
         if not perm:
             self.perm = {}
         elif isinstance(perm, str):
-            self.perm = Perm.str_to_perm(perm)
+            self.perm = Perm.fromstr(perm)
         else:
             self.perm = perm
 
@@ -23,21 +24,24 @@ class Perm:
         return {k: self.perm[k] for k in self.perm if self.perm[k] != k}
 
     @classmethod
-    def str_to_perm(cls, perm_str: str):
+    def fromstr(cls, perm_str: str):
         cycles = [cls.parse_cycle(x) for x in perm_str[1:-1].split(')(')]
-        return prod(cycles)
+        return reduce(compose, cycles, {})
 
     @classmethod
-    def parse_cycle(cls, cycle_str: str) -> dict[int, int]:
+    def parse_cycle(cls, cycle_str: str):
         elems = list(map(int, cycle_str.split(' ')))
 
-        perm = {}
-        for i in range(len(elems) - 1):
-            perm[elems[i]] = elems[i + 1]
-
+        perm = {
+            elems[i]: elems[i + 1]
+            for i in range(len(elems) - 1)
+        }
         perm[elems[-1]] = elems[0]
 
         return perm
+
+    def __len__(self) -> int:
+        return len(self.norm())
 
     def __repr__(self) -> str:
         cycles: list[list[int]] = []
@@ -72,29 +76,7 @@ class Perm:
         if not isinstance(other, Perm):
             raise Exception('Not allowed')
 
-        res = {}
-        for x in other.perm:
-            if other.perm[x] in self.perm:
-                res[x] = self.perm[other.perm[x]]
-            else:
-                res[x] = other.perm[x]
-
-        for x in set(self.perm.keys()) - set(other.perm.keys()):
-            res[x] = self.perm[x]
-
-        return Perm(res)
-
-def prod(cycles) -> dict[int, int]:
-    res = {}
-    for cycle in reversed(cycles):
-        for x in res:
-            if res[x] in cycle:
-                res[x] = cycle[res[x]]
-
-        for x in set(cycle.keys()) - set(res.keys()):
-            res[x] = cycle[x]
-
-    return res
+        return Perm(compose(self.perm, other.perm))
 
 # Return the symmetric group S_n
 def s(n: int) -> list[Perm]:
@@ -104,8 +86,15 @@ def s(n: int) -> list[Perm]:
 
     return res
 
-# print(s(3))
-# print(Perm('(1 2 3 4)') == Perm('(1 2 3 4)'))
-# print(Perm('(1 3 4)(1 2)(3 4)') == Perm('(1 2 3)'))
-# print(Perm('(1 3)(1 2)(3 4)') == Perm('(1 2 3 4)'))
-# print(Perm('(4 5)') * Perm('(1 3)') * Perm('(1 2)'))
+def compose(g: dict[int, int], f: dict[int, int]) -> dict[int, int]:
+    res = {}
+    for x in f:
+        if f[x] in g:
+            res[x] = g[f[x]]
+        else:
+            res[x] = f[x]
+
+    for x in set(g.keys()) - set(f.keys()):
+        res[x] = g[x]
+
+    return res
