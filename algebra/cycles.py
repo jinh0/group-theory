@@ -24,6 +24,9 @@ def prod(cycles: list[Perm], n: int):
         for x in res:
             res[x] = cycle[res[x]]
 
+        for x in set(cycle.keys()) - set(res.keys()):
+            res[x] = cycle[x]
+
     return res
 
 def perm_to_str(perm: Perm):
@@ -54,12 +57,13 @@ def perm_to_str(perm: Perm):
 def simplify(perm_str: str, n: int) -> str:
     return perm_to_str(str_to_perm(perm_str, n))
 
-def s(n: int) -> list[str]:
+def s(n: int) -> list[Perm]:
     res = []
     for perm in itertools.permutations(range(1, n + 1)):
         res.append({i + 1: perm[i] for i in range(n)})
 
-    return list(map(perm_to_str, res))
+    return res
 
+assert simplify('(1 2 3 4)', 4) == '(1 2 3 4)'
 assert simplify('(1 3 4)(1 2)(3 4)', 4) == '(1 2 3)'
 assert simplify('(1 3)(1 2)(3 4)', 4) == '(1 2 3 4)'
