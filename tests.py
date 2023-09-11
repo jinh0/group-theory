@@ -1,5 +1,5 @@
 from hypothesis import given, strategies as st
-from algebra.cycles import str_to_perm, perm_to_str, evaluate
+from algebra.perms import Perm
 
 @st.composite
 def gen_perm(draw):
@@ -11,19 +11,14 @@ def gen_perm(draw):
         )
     )
 
-    return dict(zip(range(1, n + 1), xs))
-
-# Without the number of elements, in order to compare permutations,
-# we must "normalize" them, i.e., get rid of 1-cycles
-def norm(perm: dict[int, int]):
-    return {k: perm[k] for k in perm if perm[k] != k}
+    return Perm(dict(zip(range(1, n + 1), xs)))
 
 @given(gen_perm())
-def test_inversion(perm):
-    assert norm(str_to_perm(perm_to_str(perm))) == norm(perm)
+def test_inversion(perm: Perm):
+    assert Perm(str(perm)) == perm
 
 test_inversion()
 
-assert evaluate('(1 2 3 4)') == '(1 2 3 4)'
-assert evaluate('(1 3 4)(1 2)(3 4)') == '(1 2 3)'
-assert evaluate('(1 3)(1 2)(3 4)') == '(1 2 3 4)'
+assert Perm('(1 2 3 4)') == Perm('(1 2 3 4)')
+assert Perm('(1 3 4)(1 2)(3 4)') == Perm('(1 2 3)')
+assert Perm('(1 3)(1 2)(3 4)') == Perm('(1 2 3 4)')
